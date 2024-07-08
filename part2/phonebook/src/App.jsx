@@ -1,39 +1,34 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
 import Persons from './components/Persons'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
-
+import getData from "./services/numbers"
 
 const App = () => {
-
   const [persons, setPersons] = useState([])  
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [searchName, setSearchName] = useState('')
-  
-  
-  const hook = () => {
-    axios.
-      get('http://localhost:3001/persons').
-      then(response => {
-      setPersons(response.data)
-    })
-  }
-  useEffect(hook, [])
 
+  useEffect(() => {
+    getData.getAll()
+      .then(returnedPersons => {
+        setPersons(returnedPersons)
+      })
+      .catch(error => {
+        alert('Error fetching data:', error)
+      })
+  }, [])
 
   const handleSearch = (event) => {
     setSearchName(event.target.value)
   }
 
-  
   const filteredPersons = persons.filter(person => 
     person.name.toLowerCase().includes(searchName.toLowerCase())
   )
 
-
-  const handleNameChange = (event) => {
+  const handleNewName = (event) => {
     setNewName(event.target.value)
   }
 
@@ -41,41 +36,68 @@ const App = () => {
     setNewNumber(event.target.value)
   }
 
-  const addName = (event) => {
+  const addName = async (event) => {
     event.preventDefault()
-    if (newName.trim() === '') {
-      return
+
+    const newPerson = {
+      name: newName.trim(),
+      number: newNumber.trim()  
     }
-    if (newNumber.trim() === '') {
+
+    if (!newPerson.name || !newPerson.number) {
+      alert('Name and number cannot be empty')
       return
     }
 
-    if (persons.some(person => person.name.toLowerCase() === newName.trim().toLowerCase())) {
-      alert(newName + ' is already added to your phonebook')
+    const oldPerson = persons.find(person => person.name.toLowerCase() === newName.trim().toLowerCase())
+    
+    if (oldPerson) {
+      if (window.confirm(`${newName} is already added to your phonebook, replace the old number with a new one?`)) {
+        try {
+          const returnedPerson = await getData.update({ ...oldPerson, number: newNumber.trim() })
+          setPersons(persons.map(person => person.id !== oldPerson.id ? person : returnedPerson))
+          setNewName('')
+          setNewNumber('')
+        } catch (error) {
+          alert(`Error updating person: ${error}`)
+        }
+      }
       return
     }
 
-    setPersons(persons.concat({name : newName.trim(), number: newNumber.trim(), id: "${index}"}))
-    setNewName('')
-    setNewNumber('')
+    try {
+      const data = await getData.create(newPerson)
+      setPersons(persons.concat(data))
+      setNewName('')
+      setNewNumber('')
+    } catch (error) {
+      alert(`Error adding person: ${error}`)
+    }
+  }
+
+  const deleteContact = async (person) => {
+    if (window.confirm(`Delete ${person.name}?`)) {
+      try {
+        await getData.del(person.id)
+        setPersons(persons.filter(p => p.id !== person.id))
+      } catch (error) {
+        alert(`Error deleting person: ${error}`)
+      }
+    }
   }
 
   return (
     <div>
       <h2>Phonebook</h2>
-      
-      <Filter searchName={searchName} handleSearch={handleSearch}/>
-      
-      <h2>add a new</h2>
-      
+      <Filter searchName={searchName} handleSearch={handleSearch} />
+      <h2>Add a new</h2>
       <PersonForm 
         addName={addName} 
-        newName={newName} handleNameChange={handleNameChange}
+        newName={newName} handleNameChange={handleNewName}
         newNumber={newNumber} handleNewNumber={handleNewNumber}
       />
-
       <h2>Numbers</h2>
-      <Persons filteredPersons={filteredPersons}/>
+      <Persons filteredPersons={filteredPersons} deleteContact={deleteContact} />
     </div>
   )
 }

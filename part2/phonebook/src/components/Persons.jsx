@@ -1,8 +1,14 @@
-const Persons = ({filteredPersons}) => {
-    return <ul type="none" style={{paddingLeft:0}}>
-          {filteredPersons.map((person, index) => 
-            <li key={index}>{person.name} {person.number}</li>)}
-        </ul>
-  }
+const Persons = ({ filteredPersons, deleteContact }) => {
+  return (
+    <ul style={{ paddingLeft: 0, listStyleType: 'none' }}>
+      {filteredPersons.map(person => (
+        <li key={person.id}>
+          {person.name} {person.number}
+          <button onClick={() => deleteContact(person)}>delete</button>
+        </li>
+      ))}
+    </ul>
+  )
+}
 
 export default Persons
