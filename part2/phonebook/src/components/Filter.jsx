@@ -1,7 +1,9 @@
 const Filter = ({ searchName, handleSearch }) => {
   return (
     <div>
-      filter shown with <input 
+      <label htmlFor="search">filter shown with:</label>
+      <input 
+        id="search"
         value={searchName}
         onChange={handleSearch}  
       />
