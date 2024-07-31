@@ -1,10 +1,12 @@
 const express = require('express');
 const morgan = require('morgan')
 
-
 const app = express();
 
-app.use(express.json());
+
+app.use(express.static('dist'))
+
+
 // Custom token to log request body for POST requests
 morgan.token('body', (req) => JSON.stringify(req.body));
 
@@ -32,6 +34,12 @@ let persons = [
       number: "39-23-6423122"
     }
 ];
+
+
+const cors = require('cors')
+app.use(cors())
+
+app.use(express.json());
 
 app.get('/api/persons', (request, response) => {
     response.json(persons);
@@ -106,7 +114,7 @@ const unknownEndPoint = (request, response) => {
 
 app.use(unknownEndPoint);
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
