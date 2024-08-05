@@ -47,6 +47,7 @@ const App = () => {
       number: newNumber.trim()  
     }
 
+    
     if (!newPerson.name || !newPerson.number) {
       alert('Name and number cannot be empty')
       return
@@ -103,10 +104,19 @@ const App = () => {
       }, 5000)
     })
     .catch((error) => {
-      setNotification({ message: `Error adding person: ${error.name}`, type: 'error' })
+      const errorMessage = 
+        error.response && 
+        error.response.data && 
+        error.response.data.error ? 
+        error.response.data.error : 
+        'Unknown error occurred';
+
+      console.log(errorMessage)
+      setNotification({ message: errorMessage, type: 'error' });
       setTimeout(() => {
-        setNotification({ message: null, type: '' })
-      }, 5000)
+        setNotification({ message: null, type: '' });
+      }, 5000);
+      
     })
   }
 
