@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt')
-const User = require('../models/user')
+const BlogUser = require('../models/user')
 const userRouter = require('express').Router()
 
 
@@ -16,16 +16,15 @@ userRouter.post('/', async (request, response) => {
     return response.status(400)
       .json({ error: 'Username and password must be atleast 3 characters long.' })
   }
-  if (password.length < 3) {
-    return response.status(400).json({
-      error: 'Password must be at least 3 characters long'
-    })
+  const existingUser = await BlogUser.findOne({ username })
+  if (existingUser) {
+    return response.status(400).json({ error: 'Username must be unique' })
   }
 
   const saltRounds = 10
   const passwordHash = await bcrypt.hash(password, saltRounds)
 
-  const user = new User({
+  const user = new BlogUser({
     username,
     name,
     passwordHash
@@ -36,7 +35,7 @@ userRouter.post('/', async (request, response) => {
 })
 
 userRouter.get('/', async (request, response) => {
-  const users = await User.find({})
+  const users = await BlogUser.find({})
     .populate('blogs', { title: 1, url: 1, likes: 1 })
 
   response.json(users)
