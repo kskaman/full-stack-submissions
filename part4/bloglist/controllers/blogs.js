@@ -12,6 +12,9 @@ blogsRouter.post('/', async (request, response) => {
 
   const user = request.user // This is populated by middleware.userExtractor
 
+  if (!user) {
+    return response.status(401).json({ error: 'token invalid or missing' })
+  }
   if (!body.title || !body.url) {
     return response.status(400).json({ error: 'Title and URL are required' })
   }
@@ -20,7 +23,7 @@ blogsRouter.post('/', async (request, response) => {
     title: body.title,
     author: body.author,
     url: body.url,
-    likes: body.likes,
+    likes: body.likes || 0,
     user: user._id,
   })
 

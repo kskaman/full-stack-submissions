@@ -29,12 +29,12 @@ app.use(express.json())
 
 // use these middlewares before other controller files
 app.use(middleware.requestLogger)
-app.use(middleware.tokenExtractor)
+
 app.use('/api/blogs',
+  middleware.tokenExtractor,
   middleware.userExtractor,
   blogsRouter
 )
-
 app.use('/api/users', userRouter)
 app.use('/api/login', loginRouter)
 
