@@ -113,15 +113,13 @@ describe('Blog API tests', () => {
     const blogToDelete = blogsAtStart.find(blog =>
       blog.user.toString() === user.id.toString())
 
-    console.log('blogToDelete : ', blogToDelete)
-
     await api.delete(`/api/blogs/${blogToDelete.id}`)
       .set('Authorization', `Bearer ${token}`)
       .expect(204)
 
     // check blog count has decreased
     const blogsAtEnd = await helper.blogsInDb()
-    assert.strictEqual(blogsAtEnd.length, blogsAtStart - 1)
+    assert.strictEqual(blogsAtEnd.length, blogsAtStart.length - 1)
 
     // Verify that the blog is no longer in the database
     const titles = blogsAtEnd.map(b => b.title)
@@ -129,14 +127,43 @@ describe('Blog API tests', () => {
 
     // Check if the blog is removed from the user's blogs
     const userAtEnd = await BlogUser.findById(user.id).populate('blogs')
-    console.log('userAtEnd : ', userAtEnd)
-    console.log('userAtEnd blog length : ', userAtEnd.blogs.length)
-    console.log('user : ', user)
-    console.log('user blogs length : ', user.blogs.length)
     assert.strictEqual(userAtEnd.blogs.length, user.blogs.length - 1)
+  })
+
+  test('a blog cannot be deleted by a user who did not create it', async() => {
+    const usersAtStart = await helper.usersInDb()
+    const user = usersAtStart[0]
+
+    const blogsAtStart = await helper.blogsInDb()
+    const blogToDelete = blogsAtStart.find(blog =>
+      blog.user.toString() === user.id.toString()
+    )
+
+    const otherUser = new BlogUser({
+      username: 'anotheruser',
+      name: 'Another user',
+      passwordHash: await bcrypt.hash('password', 10)
+    })
+    await otherUser.save()
+
+    const token = helper.generateTokenForUser(otherUser)
+
+    await api.delete(`/api/blogs/${blogToDelete.id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(401)
+
+    // Ensure the blog count remains the same
+    const blogsAtEnd = await helper.blogsInDb()
+    assert.strictEqual(blogsAtEnd.length, blogsAtStart.length)
+
+    // Verify that the blog is still in the database
+    const titles = blogsAtEnd.map(b => b.title)
+    assert(titles.includes(blogToDelete.title))
   })
 })
 
-after( async () =>
+after( async () => {
+  await Blog.deleteMany({})
+  await BlogUser.deleteMany({})
   await mongoose.connection.close()
-)
+})

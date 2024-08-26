@@ -96,5 +96,6 @@ describe('User API tests', () => {
 })
 
 after(async () => {
+  await BlogUser.deleteMany({})
   await mongoose.connection.close()
 })
