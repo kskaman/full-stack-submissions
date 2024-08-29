@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import Notification from './components/Notification'
+
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -9,7 +11,8 @@ const App = () => {
   const [newTitle, setNewTitle] = useState('')
   const [newAuthor, setNewAuthor] = useState('')
   const [newUrl, setNewUrl] = useState('')
-  const [errorMessage, setErrorMessage] = useState('')
+  const [message, setMessage] = useState('')
+  const [flag, setFlag] = useState('')
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
@@ -21,7 +24,7 @@ const App = () => {
       setUser(user)
       blogService.setToken(user.token)
     }
-  })
+  }, [])
 
   useEffect(() => {
     blogService
@@ -31,7 +34,7 @@ const App = () => {
       })
   }, [])
 
-  const addBlog = (event) => {
+  const addBlog = async (event) => {
     event.preventDefault()
     const BlogObject = {
       title: newTitle,
@@ -39,14 +42,11 @@ const App = () => {
       url: newUrl,
     }
 
-    blogService
-      .create(BlogObject)
-      .then(returnedBlog => {
-        setBlogs(blogs.concat(returnedBlog))
-        setNewTitle('')
-        setNewAuthor('')
-        setNewUrl('')
-      })
+    const returnedBlog = await blogService.create(BlogObject)
+    setBlogs(blogs.concat(returnedBlog))
+    setNewBlog('')
+    setMessage(`${returnedBlog.title} by ${returnedBlog.author} added`)
+    setFlag('success')
   }
 
   const handleLogin = async (event) => {
@@ -59,19 +59,41 @@ const App = () => {
       setUser(user)
       setUsername('')
       setPassword('')
-    } catch (exception) {
-      pass 
+      setMessage(`${username} succesfully logged in`)
+      setFlag('success')
+      setTimeout(() => {
+        setMessage(null)
+      }, 5000)
+    } catch (error) {
+      setMessage('wrong username or password')
+      setFlag('fail')
+      setTimeout(() => {
+        setMessage('')
+        setFlag('')
+      }, 5000)
     }
   }
 
-  useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs( blogs )
-    )  
-  }, [])
+  const handleTitleChange = (event) => {
+    setNewTitle(event.target.value)
+  }
+
+
+  const handleAuthorChange = (event) => {
+    setNewAuthor(event.target.value)
+  }
+
+  const handleUrlChange = (event) => {
+    setNewUrl(event.target.value)
+  }
+
+  const handleLogout = () => {
+    wondow.localStorage.removeItem('loggedBlogAppUser')
+    setUser(null)
+  }
 
   const loginForm = () => {
-    <form onSubmit={handleLogin}>
+    return <form onSubmit={handleLogin}>
       <div>
         username
           <input
@@ -87,7 +109,7 @@ const App = () => {
             type="password"
             value={password}
             name="Password"
-            onChange={({ password }) => setPassword(target.value)}
+            onChange={({ target }) => setPassword(target.value)}
           />
       </div>
       <button type="submit">login</button>
@@ -95,7 +117,7 @@ const App = () => {
   }
   
   const blogForm = () => {
-    <form onSubmit={addBlog}>
+    return <form onSubmit={addBlog}>
       <div>
         Title
         <input
@@ -132,6 +154,7 @@ const App = () => {
     return (
       <div>
         <h2>Log in to application</h2>
+        <Notification message={message} flag={flag} />
         {loginForm()}
       </div>
     )
@@ -140,7 +163,8 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
-      <p>{user.name} logged in <button>logout</button></p>
+      <Notification message={message} flag={flag} />
+      <p>{user.name} logged in <button onClick={handleLogout}>logout</button></p>
       <h2>create new</h2>
       {blogForm()}
       {blogs.map(blog =>
