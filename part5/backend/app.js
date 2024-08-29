@@ -5,6 +5,7 @@ const app = express()
 const cors = require('cors')
 const mongoose = require('mongoose')
 
+
 const blogsRouter = require('./controllers/blogs')
 const userRouter = require('./controllers/users')
 const loginRouter = require('./controllers/login')
@@ -26,7 +27,7 @@ mongoose.connect(config.MONGODB_URI)
 
 app.use(cors())
 app.use(express.json())
-
+app.use(express.static('dist'))
 // use these middlewares before other controller files
 app.use(middleware.requestLogger)
 
