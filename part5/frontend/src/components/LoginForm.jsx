@@ -4,7 +4,7 @@ import EventNotification from './EventNotification'
 
 
 const LoginForm = ({ handleLogin }) => {
-  
+
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [message, setMessage] = useState(null)
@@ -12,14 +12,14 @@ const LoginForm = ({ handleLogin }) => {
 
   const onLogin = async (event) => {
     event.preventDefault()
-    
+
     try {
       await handleLogin({ username, password })
       setMessage(`Welcome ${username}`)
       setFlag('success')
     } catch (error) {
       setMessage('Incorrect username or password')
-      setFlag('fail')  
+      setFlag('fail')
     } finally {
       setTimeout(() => {
         setMessage(null)

@@ -1,22 +1,21 @@
 import { useState } from 'react'
 import PropTypes from 'prop-types'
+import '../styles/Blog.css'
 
 const Blog = ({ blog, updateBlog, deleteBlog, user }) => {
   const [visible, setVisible] = useState(false)
 
-  const hide = { display: visible ? 'none' : '' }
-  const show = { display: visible ? '' : 'none' }
-  
   const toggleVisibility = () => {
-    setVisible(true)
+    setVisible(!visible)
   }
 
   const handleLike = () => {
-    updateBlog = {
+    const updatedBlog = {
       ...blog,
-      likes: blog.likes + 1
+      likes: blog.likes + 1,
+      user: blog.user
     }
-    updateBlog(blog.id, updateBlog)
+    updateBlog(blog.id, updatedBlog)
   }
 
   const handleDelete = () => {
@@ -28,17 +27,18 @@ const Blog = ({ blog, updateBlog, deleteBlog, user }) => {
 
 
   return <div className="blog">
-    <div>
+    <div className="blogTitleAuthor">
       {blog.title} {blog.author}
       <button onClick={toggleVisibility}>{visible ? 'hide' : 'view'}</button>
     </div>
     {visible && (
-      <div>
-        <p>{blog.url}</p>
-        <p>{blog.likes} likes <button onClick={handleLike}>like</button></p>
-        {user.username === blog.user.username && <button onClick={handleDelete}>Delete</button>}
-    </div>)} 
-  </div>  
+      <div className="blogDetails">
+        <p className="blogUrl">{blog.url}</p>
+        <p className="blogLikes">{blog.likes} likes <button onClick={handleLike}>like</button></p>
+        {user.username === blog.user.username &&
+          <button onClick={handleDelete}>Delete</button>}
+      </div>)}
+  </div>
 }
 
 Blog.propTypes = {

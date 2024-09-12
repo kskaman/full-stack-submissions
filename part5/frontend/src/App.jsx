@@ -27,7 +27,7 @@ const App = () => {
         return decodedToken.exp > currentTime
       } catch (error) {
         return false
-      } 
+      }
     }
 
     const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser')
@@ -89,10 +89,10 @@ const App = () => {
       console.error('Error adding blog', error)
     }
   }
-  
+
   const updateBlog = async (id, updatedBlog) => {
-    const returnedBlog = await blogService.update(id, updateBlog)
-    setBlogs(blogs.map(blog => blog.id === id ? returnedBlog : blog)
+    const returnedBlog = await blogService.update(id, updatedBlog)
+    setBlogs(blogs.map(blog => blog.id === id ? { ...returnedBlog, user:blog.user } : blog)
       .sort((a, b) => b.likes - a.likes))
   }
 
@@ -104,13 +104,13 @@ const App = () => {
   if (user === null) {
     return (
       <div>
-        {showLogin ? 
+        {showLogin ?
           <>
             <LoginForm handleLogin={handleLogin} />
             <button onClick={() => setShowLogin(false)}>
               Register
             </button>
-          </> 
+          </>
           : <RegisterForm handleRegister={handleRegister} setShowLogin={setShowLogin}/>
         }
       </div>
@@ -124,10 +124,11 @@ const App = () => {
       <Togglable buttonLabel='create a new blog' ref={blogFormRef}>
         <BlogForm addBlog={addBlog} />
       </Togglable>
+      <br></br>
       {blogs.map(blog =>
-        <Blog 
-          key={blog.id} blog={blog} 
-          updateBlog={updateBlog} deleteBlog={deleteBlog} 
+        <Blog
+          key={blog.id} blog={blog}
+          updateBlog={updateBlog} deleteBlog={deleteBlog}
           user={user}/>
       )}
     </div>

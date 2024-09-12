@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import EventNotification from './EventNotification'
 
 const BlogForm = ({ addBlog }) => {
-  
+
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
@@ -26,7 +26,7 @@ const BlogForm = ({ addBlog }) => {
       setMessage(`${title} succesfully added`)
       setFlag('success')
     } catch (error) {
-      setMessage(`Unnable to add blog`)
+      setMessage('Unnable to add blog')
       setFlag('fail')
     } finally {
       setTimeout(() => {
@@ -44,29 +44,32 @@ const BlogForm = ({ addBlog }) => {
     <EventNotification message={message} flag={flag} />
     <h2>Create new blog</h2>
     <form onSubmit={handleAddBlog}>
-        <div>
-            Title
-            <input
-                value={title}
-                onChange={handleTitleChange}
-                name="Title" />
-        </div>
-        <div>
-            Author
-            <input
-                value={author}
-                onChange={handleAuthorChange}
-                name="Author" />
-        </div>
-        <div>
-            URL
-            <input
-                value={url}
-                onChange={handleUrlChange}
-                name="Url" />
-        </div>
-        <button type="submit">Create</button>
-    </form></>  
+      <div>
+        Title
+        <input
+          placeholder='Enter blog title'
+          value={title}
+          onChange={handleTitleChange}
+          name="Title" />
+      </div>
+      <div>
+        Author
+        <input
+          placeholder='Enter blog author'
+          value={author}
+          onChange={handleAuthorChange}
+          name="Author" />
+      </div>
+      <div>
+        URL
+        <input
+          placeholder='Enter blog URL'
+          value={url}
+          onChange={handleUrlChange}
+          name="Url" />
+      </div>
+      <button type="submit">Create</button>
+    </form></>
 }
 
 BlogForm.propTypes = {

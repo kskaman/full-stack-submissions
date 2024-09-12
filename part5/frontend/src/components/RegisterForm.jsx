@@ -6,7 +6,7 @@ import EventNotification from './EventNotification'
 
 
 const RegisterForm = ({ handleRegister, setShowLogin }) => {
-  
+
   const [email, setEmail] = useState('')
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -16,21 +16,21 @@ const RegisterForm = ({ handleRegister, setShowLogin }) => {
 
   const onSubmit = async (event) => {
     event.preventDefault()
-    
+
     try {
       await handleRegister({
-        username: username, name: name, 
-        email: email, password: password})
+        username: username, name: name,
+        email: email, password: password })
       setMessage(`User ${username} successfully registered`)
       setFlag('success')
     } catch (error) {
-      setMessage(`Registration failed`)
+      setMessage('Registration failed')
       setFlag('fail')
     } finally {
       setTimeout(() => {
         setMessage(null)
         setFlag(null)
-    }, 5000)}
+      }, 5000)}
 
     setName('')
     setEmail('')
