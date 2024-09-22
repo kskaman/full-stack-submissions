@@ -6,7 +6,7 @@ const EventNotification = ({ message, flag }) => {
   }
 
   return (
-    <div className={`message ${flag}`} >
+    <div className={`message ${flag}`} data-testid="errorMessage" >
       {message}
     </div>
   )

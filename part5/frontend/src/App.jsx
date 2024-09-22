@@ -9,11 +9,14 @@ import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
 import LoginForm from './components/LoginForm'
 import RegisterForm from './components/RegisterForm'
+import EventNotification from './components/EventNotification'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
   const [showLogin, setShowLogin] = useState(true)
+  const [message, setMessage] = useState(null)
+  const [flag, setFlag] = useState(null)
 
   const blogFormRef = useRef()
 
@@ -55,22 +58,38 @@ const App = () => {
     }
   }, [user])
 
+
+  const notify = (message, type) => {
+    setMessage(message)
+    setFlag(type)
+
+    setTimeout(() => {
+      setMessage(null)
+      setFlag(null)
+    }, 5000)
+  }
+
+
   const handleLogin = async (credentials) => {
     try {
       const user = await loginService.login(credentials)
       setUser(user)
       window.localStorage.setItem('loggedBlogAppUser', JSON.stringify(user))
       blogService.setToken(user.token)
+      notify(`Welcome ${user.username}`, 'success')
     } catch (error) {
       console.error('Login Failed', error)
+      notify('Incorrect username or password', 'fail')
     }
   }
 
   const handleRegister = async (credentials) => {
     try {
       await registerService.register(credentials)
+      notify('Registration successful! Please login.', 'success')
     } catch (error) {
       console.error('Registration failed', error)
+      notify('Registration failed. Try again.', 'fail')
     }
   }
 
@@ -85,25 +104,41 @@ const App = () => {
     try {
       const returnedBlog = await blogService.create(blogObject)
       setBlogs(blogs.concat(returnedBlog))
+      notify(`Blog '${returnedBlog.title}' added successfully`, 'success')
     } catch (error) {
       console.error('Error adding blog', error)
+      notify('Error adding blog. Please try again.', 'fail')
     }
   }
 
   const updateBlog = async (id, updatedBlog) => {
-    const returnedBlog = await blogService.update(id, updatedBlog)
-    setBlogs(blogs.map(blog => blog.id === id ? { ...returnedBlog, user:blog.user } : blog)
-      .sort((a, b) => b.likes - a.likes))
+    try {
+      const returnedBlog = await blogService.update(id, updatedBlog)
+      setBlogs(blogs.map(blog => blog.id === id ? { ...returnedBlog, user: blog.user } : blog)
+        .sort((a, b) => b.likes - a.likes))
+      notify(`Blog '${returnedBlog.title}' updated successfully`, 'success')
+    } catch (error) {
+      console.error('Error updating blog', error)
+      notify('Error updating blog. Please try again.', 'fail')
+    }
   }
 
   const deleteBlog = async (id) => {
-    await blogService.remo(id)
-    setBlogs(blogs.filter(blog => blog.id !== id))
+    try {
+      await blogService.remove(id)
+      setBlogs(blogs.filter(blog => blog.id !== id))
+      notify('Blog deleted successfully', 'success')
+    } catch (error) {
+      console.error('Error deleting blog', error)
+      notify('Error deleting blog. Please try again.', 'fail')
+    }
   }
+
 
   if (user === null) {
     return (
       <div>
+        <EventNotification message={message} flag={flag} />
         {showLogin ?
           <>
             <LoginForm handleLogin={handleLogin} />
@@ -119,6 +154,7 @@ const App = () => {
 
   return (
     <div>
+      <EventNotification message={message} flag={flag} />
       <h2>Blogs</h2>
       <p>{user.name} logged in <button onClick={handleLogout}>Logout</button></p>
       <Togglable buttonLabel='create a new blog' ref={blogFormRef}>

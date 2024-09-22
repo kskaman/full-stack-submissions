@@ -25,18 +25,17 @@ const Blog = ({ blog, updateBlog, deleteBlog, user }) => {
   }
 
 
-
   return <div className="blog">
     <div className="blogTitleAuthor">
       {blog.title} {blog.author}
-      <button onClick={toggleVisibility}>{visible ? 'hide' : 'view'}</button>
+      <button onClick={toggleVisibility} data-testid='hide-view-button'>{visible ? 'hide' : 'view'}</button>
     </div>
     {visible && (
       <div className="blogDetails">
         <p className="blogUrl">{blog.url}</p>
-        <p className="blogLikes">{blog.likes} likes <button onClick={handleLike}>like</button></p>
+        <p className="blogLikes">{blog.likes} likes <button onClick={handleLike} data-testid='like-button'>like</button></p>
         {user.username === blog.user.username &&
-          <button onClick={handleDelete}>Delete</button>}
+          <button onClick={handleDelete} data-testid='delete-button'>Delete</button>}
       </div>)}
   </div>
 }

@@ -1,8 +1,6 @@
 import { useState } from 'react'
 import PropTypes from 'prop-types'
 
-import EventNotification from './EventNotification'
-
 
 
 const RegisterForm = ({ handleRegister, setShowLogin }) => {
@@ -11,27 +9,12 @@ const RegisterForm = ({ handleRegister, setShowLogin }) => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [name, setName] = useState('')
-  const [flag, setFlag] = useState(null)
-  const [message, setMessage] = useState(null)
 
   const onSubmit = async (event) => {
     event.preventDefault()
-
-    try {
-      await handleRegister({
-        username: username, name: name,
-        email: email, password: password })
-      setMessage(`User ${username} successfully registered`)
-      setFlag('success')
-    } catch (error) {
-      setMessage('Registration failed')
-      setFlag('fail')
-    } finally {
-      setTimeout(() => {
-        setMessage(null)
-        setFlag(null)
-      }, 5000)}
-
+    await handleRegister({
+      username: username, name: name,
+      email: email, password: password })
     setName('')
     setEmail('')
     setPassword('')
@@ -39,7 +22,6 @@ const RegisterForm = ({ handleRegister, setShowLogin }) => {
   }
 
   return <>
-    <EventNotification message={message} flag={flag} />
     <form onSubmit={onSubmit}>
       <div>
         Name
