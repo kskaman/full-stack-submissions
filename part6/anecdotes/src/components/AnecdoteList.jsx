@@ -2,9 +2,12 @@ import { useSelector } from 'react-redux'
 import Anecdote from './Anecdote'
 
 const AnecdoteList = () => {
-  const anecdotes = useSelector(state => 
-    [...state].sort((a, b) => b.votes - a.votes) // Sort by votes
-  )
+  const anecdotes = useSelector(({ anecdotes, filter }) => {
+    if (filter === '') return anecdotes
+    return anecdotes.filter(anecdote => 
+      anecdote.content.toLowerCase().includes(filter.toLowerCase())
+    )
+  })
 
   return (
     <div>
