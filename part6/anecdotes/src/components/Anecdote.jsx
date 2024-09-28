@@ -1,12 +1,12 @@
 import { useDispatch } from 'react-redux'
-import { voteAnecdote } from '../reducers/anecdoteReducer'
+import { voteAnecdoteAsync } from '../reducers/anecdoteReducer'
 import { setNotificationWithTimeout } from '../reducers/notificationReducer'
 
 const Anecdote = ({ anecdote }) => {
   const dispatch = useDispatch()
 
   const handleVote = () => {
-    dispatch(voteAnecdote(anecdote.id))
+    dispatch(voteAnecdoteAsync(anecdote.id))
     dispatch(setNotificationWithTimeout(`You voted for: ${anecdote.content}`, 5))
   }
 

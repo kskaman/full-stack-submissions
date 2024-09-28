@@ -1,4 +1,3 @@
-// src/components/AnecdoteList.jsx
 import { useSelector } from 'react-redux'
 import Anecdote from './Anecdote'
 
