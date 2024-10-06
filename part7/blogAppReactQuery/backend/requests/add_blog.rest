@@ -1,0 +1,22 @@
+POST http://localhost:3003/api/blogs 
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImhlbGxhcyIsImlkIjoiNjZjOGFkYjgxYzQ1MmI0ZGYwYTdiODdkIiwiaWF0IjoxNzI0NDI3NzI2LCJleHAiOjE3MjQ0Mjk1MjZ9.nA2CHAgkUphTX7CYC3LbRk4kY1lSP06d2eBe3YvPodM
+
+{
+  "title": "Things I Don't know as of 2018",
+  "author": "Dan Abramov",
+  "url": "https://overreacted.io/things-i-dont-know-as-of-2018/",
+  "likes": 10
+}
+
+
+###
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1sdXVra2FpIiwiaWQiOiI2NmM4YWRiZjFjNDUyYjRkZjBhN2I4ODAiLCJpYXQiOjE3MjQ0Mjc3NTYsImV4cCI6MTcyNDQyOTU1Nn0.DsrxrxyPklnlxj9g7Vxg3-kBrukJRyp9frMLKheNOqk
+
+{
+  "title": "Microservices and the First Law of Distributed Objects",
+  "author": "Martin Fowler",
+  "url": "https://martinfowler.com/articles/distributed-objects-microservices.html"
+}

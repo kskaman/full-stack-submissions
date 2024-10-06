@@ -3,7 +3,7 @@ const initialState = {
   ok: 0,
   bad: 0
 }
-
+e
 const counterReducer = (state = initialState, action) => {
   console.log(action)
   switch (action.type) {
