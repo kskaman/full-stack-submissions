@@ -31,7 +31,9 @@ blogsRouter.post('/', async (request, response) => {
     const savedBlog = await blog.save()
     user.blogs = user.blogs.concat(savedBlog._id)
     await user.save()
-    response.status(201).json(savedBlog)
+
+    const createdBlog = await Blog.findById(savedBlog._id).populate('user')
+    response.status(201).json(createdBlog)
   } catch {
     response.status(500).json({ error: 'Internal server error' })
   }
@@ -85,5 +87,48 @@ blogsRouter.delete('/:id', async (request, response) => {
   await Blog.findByIdAndDelete(request.params.id)
   response.status(204).end()
 })
+
+
+// Route to fetch comments for a specific blog post
+blogsRouter.get('/:id/comments', async (req, res) => {
+  try {
+    const blogId = req.params.id
+    const blog = await Blog.findById(blogId)
+
+    if (!blog) {
+      return res.status(404).json({ error: 'Blog not found' })
+    }
+
+    // Send the comments associated with the blog
+    res.json(blog.comments)
+  } catch (error) {
+    res.status(500).json({ error: `Something went wrong - ${error}` })
+  }
+})
+
+// Route to add a comment to a blog post
+blogsRouter.post('/:id/comments', async (request, response) => {
+  try {
+    const blogId = request.params.id
+    const comment = request.body.content
+    console.log(comment)
+    // Find the blog by ID
+    const blog = await Blog.findById(blogId)
+
+    if (!blog) {
+      return response.status(404).json({ error: 'Blog not found' })
+    }
+
+    // Add the new comment to the blog's comments array
+    blog.comments = blog.comments.concat(comment)
+    await blog.save()
+
+    // Return the updated blog with comments
+    response.status(201).json(blog)
+  } catch (error) {
+    response.status(500).json({ error: `Something went wrong - ${error}` })
+  }
+})
+
 
 module.exports = blogsRouter

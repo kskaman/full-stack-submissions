@@ -1,12 +1,13 @@
 import { useSelector } from 'react-redux'
+import { Alert } from 'react-bootstrap'
 
 const EventNotification = () => {
   const { message, flag } = useSelector(state => state.notification)
 
   return message ? (
-    <div className={`message ${flag}`}>
+    <Alert variant={flag}>
       {message}
-    </div>
+    </Alert>
   ) : null
 }
 

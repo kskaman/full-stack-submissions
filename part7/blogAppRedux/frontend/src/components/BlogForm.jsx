@@ -1,8 +1,12 @@
 import { useState } from 'react'
-import PropTypes from 'prop-types'
+import { useDispatch } from 'react-redux'
+import { createBlog } from '../reducers/blogReducer'
+import { setNotificationWithTimeout } from '../reducers/notificationReducer'
 
+import { Form, Button } from 'react-bootstrap'
 
-const BlogForm = ({ addBlog }) => {
+const BlogForm = () => {
+  const dispatch = useDispatch()
 
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
@@ -15,56 +19,61 @@ const BlogForm = ({ addBlog }) => {
   const handleAddBlog = async (event) => {
     event.preventDefault()
 
-    addBlog({
-      title: title,
-      author: author,
-      url: url
-    })
+    if (title === '' || author === '' || url === '') {
+      dispatch(setNotificationWithTimeout('Please fill out all fields'), 'fail', 5)
+      return
+    }
 
-    setTitle('')
-    setAuthor('')
-    setUrl('')
+    try {
+      dispatch(createBlog({
+        title: title,
+        author: author,
+        url: url
+      }))
+      dispatch(setNotificationWithTimeout('Blog created successfully!', 'success', 5))
+      setTitle('')
+      setAuthor('')
+      setUrl('')
+    } catch (error) {
+      dispatch(setNotificationWithTimeout('Failed to create Blog, please try again'), 'fail', 5)
+    }
   }
 
   return <>
     <h2>Create new blog</h2>
-    <form onSubmit={handleAddBlog}>
-      <div>
-        Title
-        <input
+    <Form onSubmit={handleAddBlog}>
+      <Form.Group>
+        <Form.Label>Title</Form.Label>
+        <Form.Control
           placeholder='Enter blog title'
           value={title}
           onChange={handleTitleChange}
           name="Title"
           data-testid='title'
         />
-      </div>
-      <div>
-        Author
-        <input
+      </Form.Group>
+      <Form.Group>
+        <Form.Label>Author</Form.Label>
+        <Form.Control
           placeholder='Enter blog author'
           value={author}
           onChange={handleAuthorChange}
           name="Author"
           data-testid='author'
         />
-      </div>
-      <div>
-        URL
-        <input
+      </Form.Group>
+      <Form.Group>
+        <Form.Label>URL</Form.Label>
+        <Form.Control
           placeholder='Enter blog URL'
           value={url}
           onChange={handleUrlChange}
           name="Url"
           data-testid='url'
         />
-      </div>
-      <button type="submit">Create</button>
-    </form></>
-}
-
-BlogForm.propTypes = {
-  addBlog: PropTypes.func.isRequired
+      </Form.Group>
+      <Button variant="primary" type="submit">Create</Button>
+    </Form></>
 }
 
 export default BlogForm

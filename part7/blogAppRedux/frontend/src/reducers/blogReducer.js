@@ -21,11 +21,18 @@ const blogSlice = createSlice({
     deleteBlog(state, action) {
       const id = action.payload
       return state.filter(blog => blog.id !== id)
+    },
+    addCommentToBlog(state, action) {
+      const { id, comment } = action.payload
+      const blogToUpdate = state.find(blog => blog.id === id)
+      if (blogToUpdate) {
+        blogToUpdate.comments = blogToUpdate.comments.concat(comment)
+      }
     }
   }
 })
 
-export const { setBlogs, addBlog, updateBlog, deleteBlog } = blogSlice.actions
+export const { setBlogs, addBlog, updateBlog, deleteBlog, addCommentToBlog } = blogSlice.actions
 
 
 // Thunk action for fetching all blogs
@@ -85,5 +92,23 @@ export const removeBlog = (id) => {
     }
   }
 }
+
+// Thunk action for adding a comment
+export const addComment = (id, comment) => {
+  return async (dispatch) => {
+    try {
+      // Add the comment to the backend
+      await blogService.addComment(id, comment)
+
+      // Update the Redux state with the new comment
+      dispatch(addCommentToBlog({ id, comment }))
+      dispatch(setNotificationWithTimeout('Comment added successfully', 'success', 5))
+    } catch (error) {
+      console.log(error)
+      dispatch(setNotificationWithTimeout('Failed to add comment', 'fail', 5))
+    }
+  }
+}
+
 
 export default blogSlice.reducer
