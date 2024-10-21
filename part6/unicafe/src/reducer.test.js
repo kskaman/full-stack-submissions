@@ -63,7 +63,7 @@ describe('unicafe reducer', () => {
     })
   })
 
-  test('zero resets the state to zero', () => {
+  test('reset works', () => {
     const action = {
       type: 'ZERO'
     }

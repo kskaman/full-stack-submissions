@@ -1,12 +1,13 @@
 import { useDispatch } from 'react-redux'
-import { voteAnecdoteAsync } from '../reducers/anecdoteReducer'
+import { voteAnecdote } from '../reducers/anecdoteReducer'
 import { setNotificationWithTimeout } from '../reducers/notificationReducer'
+import PropTypes from 'prop-types'
 
 const Anecdote = ({ anecdote }) => {
   const dispatch = useDispatch()
 
   const handleVote = () => {
-    dispatch(voteAnecdoteAsync(anecdote.id))
+    dispatch(voteAnecdote(anecdote.id))
     dispatch(setNotificationWithTimeout(`You voted for: ${anecdote.content}`, 5))
   }
 
@@ -19,6 +20,14 @@ const Anecdote = ({ anecdote }) => {
       </div>
     </div>
   )
+}
+
+Anecdote.propTypes = {
+  anecdote: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    content: PropTypes.string.isRequired,
+    votes: PropTypes.number.isRequired,
+  }).isRequired,
 }
 
 export default Anecdote
